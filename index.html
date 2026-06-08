@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zait Pay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-brand">
+      <div class="logo-hero-display">
+        <img src="image/zait-s-fundo.png" alt="Zait Pay Logo Oficial" class="img-logo-principal" />
+      </div>
+    </div>
+
+    <div class="auth-panel">
+      <form class="auth-card" id="loginForm">
+        <div class="logo" style="margin-bottom:32px; justify-content:center;">
+          <div class="logo-sidebar-display">
+            <img src="image/ampolha.jpeg" alt="Zait Logo" class="img-logo-sidebar" />
+          </div>
+          <span>ZAIT<span class="light">PAY</span></span>
+        </div>
+        <h2>Entrar na plataforma</h2>
+        <p>Acesse seu ecossistema financeiro de alta performance.</p>
+        
+        <label>E-mail</label>
+        <input id="email" type="email" value="admin@pay.com" required />
+        
+        <label>Senha</label>
+        <input id="password" type="password" value="123456" required />
+        
+        <button class="btn full" type="submit">Acessar sistema</button>
+        
+        <p class="toggle-auth-text">Não tem uma conta? <a href="#" onclick="toggleAuthMode(event, 'register')">Cadastre-se aqui</a></p>
+        
+        <div class="demo-help">
+          <strong>Acessos de demonstração:</strong><br />
+          • Admin: admin@pay.com | Senha: 123456<br />
+          • Ou crie uma nova conta de Cliente clicando acima.
+        </div>
+      </form>
+
+      <form class="auth-card hidden" id="registerForm" onsubmit="processRegistration(event)">
+        <div class="logo" style="margin-bottom:20px; justify-content:center;">
+          <div class="logo-sidebar-display">
+            <img src="image/ampolha.jpeg" alt="Zait Logo" class="img-logo-sidebar" />
+          </div>
+          <span>ZAIT<span class="light">PAY</span></span>
+        </div>
+        
+        <div id="regStep1">
+          <h2>Criar nova conta</h2>
+          <p>Cadastre seus dados iniciais de acesso imediato.</p>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div>
+              <label>Tipo de Conta</label>
+              <select id="regType" onchange="handleRegTypeChange()">
+                <option value="PF">Pessoa Física (PF)</option>
+                <option value="PJ">Pessoa Jurídica (PJ)</option>
+              </select>
+            </div>
+            <div>
+              <label id="regDocLabel">CPF</label>
+              <input id="regDoc" type="text" placeholder="000.000.000-00" required style="margin-bottom: 0;" />
+            </div>
+          </div>
+
+          <label>Nome Completo / Razão Social</label>
+          <input id="regName" type="text" placeholder="Ex: Anderson Albino" required />
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div>
+              <label>Telefone</label>
+              <input id="regPhone" type="tel" placeholder="(00) 00000-0000" required style="margin-bottom: 0;" />
+            </div>
+            <div>
+              <label>RG</label>
+              <input id="regRg" type="text" placeholder="00.000.000-0" required style="margin-bottom: 0;" />
+            </div>
+          </div>
+
+          <label>E-mail</label>
+          <input id="regEmail" type="email" placeholder="seu@email.com" required />
+          
+          <label>Senha de Acesso</label>
+          <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" required />
+          
+          <button class="btn full" type="button" onclick="goToKycStep()">Avançar para Documentação</button>
+          <p class="toggle-auth-text">Já possui conta? <a href="#" onclick="toggleAuthMode(event, 'login')">Faça login</a></p>
+        </div>
+
+        <div id="regStep2" class="hidden">
+          <h2>Verificação de Segurança</h2>
+          <p>Envie os documentos reais para conferência. Após validar o código enviado por e-mail, sua conta ficará pendente de ativação pelo gerente ou admin master.</p>
+          
+          <label>Documento - Frente</label>
+          <input id="regDocFront" name="documentFront" type="file" accept="image/*,.pdf" required />
+
+          <label>Documento - Verso</label>
+          <input id="regDocBack" name="documentBack" type="file" accept="image/*,.pdf" required />
+
+          <label>Facial do Cliente</label>
+          <div class="mock-upload-box" style="cursor:default;">
+            <span class="upload-icon">📸</span>
+            <span class="upload-text" id="facialStatus">Clique em “Abrir câmera” e depois em “Capturar facial”. Se o navegador bloquear câmera, envie uma selfie pelo campo abaixo.</span>
+            <video id="facialVideo" class="hidden" autoplay playsinline style="width:100%;border-radius:12px;margin-top:10px;background:#000;"></video>
+            <canvas id="facialCanvas" class="hidden"></canvas>
+            <img id="facialPreview" class="hidden" alt="Prévia facial" style="max-width:160px;border-radius:12px;margin-top:10px;" />
+            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+              <button class="btn ghost" type="button" onclick="startFacialCapture()">Abrir câmera</button>
+              <button class="btn ghost" type="button" onclick="captureFacialPhoto()">Capturar facial</button>
+            </div>
+          </div>
+          <label>Selfie alternativa</label>
+          <input id="regSelfieFile" name="selfie" type="file" accept="image/*" />
+
+          <div style="display:flex; gap: 10px; margin-top:20px;">
+            <button class="btn ghost full" type="button" onclick="goBackToStep1()">Voltar</button>
+            <button class="btn full" type="submit">Finalizar Cadastro</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-sidebar-display">
+          <img src="image/ampolha.jpeg" alt="Zait Logo" class="img-logo-sidebar" />
+        </div>
+        <span id="brandName">ZAIT<span class="light">PAY</span></span>
+      </div>
+
+      <div class="account-switcher" id="accountSwitcher">
+        <button class="switch-btn active" id="btnSwitchZait" data-account="zait"><span>ZAIT PAY</span></button>
+        <button class="switch-btn" id="btnSwitchVoltz" data-account="voltz"><span>VOLTZ PAY</span></button>
+      </div>
+
+      <nav id="nav" class="nav"></nav>
+
+      <div class="sidebar-footer" id="sidebarFooter">
+        <button class="btn ghost full hidden" id="btnAdminPanel" onclick="openPage('dashboard')">⚙️ Painel Administrativo</button>
+        <button class="btn danger full" onclick="logout()">Sair da Conta</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Visão geral da operação.</p>
+        </div>
+        <div class="user-box">
+          <div class="avatar" id="userAvatar">A</div>
+          <div><strong id="userName">Usuário</strong><br><span class="muted" id="userRole">Acesso</span></div>
+        </div>
+      </header>
+
+      <div id="content"></div>
+    </main>
+  </section>
+
+  <div id="systemModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Título</h3>
+        <button class="btn-close" onclick="closeModal()">×</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="api-config.js"></script>
+  <script type="module" src="api-client.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
